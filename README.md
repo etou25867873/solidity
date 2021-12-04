@@ -1,2 +1,1 @@
-# solidity
-# greeting
+# solidity study
