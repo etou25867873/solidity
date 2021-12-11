@@ -107,5 +107,30 @@ contract("Fundraiser", (accounts) => {
       );
       assert(dates[0],"date should be present");
     });
+
+    it ("increases the totalDonations in amount", async () => {
+      const currentTotalDonations = await fundraiser.totalDonations();
+      await fundraiser.donate({from: donor, value});
+      const newTotalDonations = await fundraiser.totalDonations();
+
+      const diff = newTotalDonations - currentTotalDonations;
+      assert.equal(
+        diff,
+        value,
+        "difference should match the donation value"
+      );
+    });
+
+    it ("increases donationsCount", async () => {
+      const currentDonationsCount = await fundraiser.donationsCount();
+      await fundraiser.donate({from: donor, value});
+      const newDonationsCount = await fundraiser.donationsCount();
+
+      assert.equal(
+        1,
+        newDonationsCount - currentDonationsCount,
+        "donationsCount should incrment by 1"
+      );
+    });
   });
 });
