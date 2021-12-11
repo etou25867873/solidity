@@ -132,5 +132,16 @@ contract("Fundraiser", (accounts) => {
         "donationsCount should incrment by 1"
       );
     });
+
+    it ("emit the DonationReceived event", async () => {
+      const tx = await fundraiser.donate({from: donor, value});
+      const expectedEvent = "DonationReceived";
+      const actualEvent = tx.logs[0].event;
+      assert.equal(
+        expectedEvent,
+        actualEvent,
+        "events should match"
+      );
+    });
   });
 });

@@ -22,6 +22,8 @@ contract Fundraiser is Ownable {
   address payable public beneficiary;
   address public custodian;
 
+  event DonationReceived(address indexed donor, uint256 value);
+
   constructor(
     string memory _name,
     string memory _url,
@@ -54,6 +56,8 @@ contract Fundraiser is Ownable {
     _donations[msg.sender].push(donation);
     totalDonations = totalDonations.add(msg.value);
     donationsCount++;
+
+    emit DonationReceived(msg.sender, msg.value);
   }
 
   function myDonations() public view returns(
