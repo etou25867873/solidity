@@ -144,4 +144,34 @@ contract("Fundraiser", (accounts) => {
       );
     });
   });
+
+  describe("withdrawing fund", () => {
+    beforeEach(async () => {
+      await fundraiser.donate({from: accounts[2], value:web3.utils.toWei('0.1')});
+    });
+    describe("access controls", () => {
+      it ("throw an error when called from a non-owner account", async () => {
+        try{
+          await fundraiser.withdraw({from: accounts[2]});
+        }catch(err){
+          const expectedError = "Ownable: caller is not the owner";
+          const actualError = err.reason;
+          assert.equal(
+            expectedError,
+            actualError,
+            "should not be permitted"
+          );
+        }
+      });
+
+      it ("permits the owner to call the function", async () => {
+        try{
+          await fundraiser.withdraw({from: owner});
+          assert(true, "no error were thrown");
+        }catch(err){
+          assert.fail("should not have thrown an error");
+        }
+      });
+    });
+  });
 });
