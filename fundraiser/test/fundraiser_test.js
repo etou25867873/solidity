@@ -1,4 +1,4 @@
-const FundraiserContract = artifacts.require("Fundraiser")
+const FundraiserContract = artifacts.require("Fundraiser");
 
 contract("Fundraiser", (accounts) => {
   let fundraiser;
