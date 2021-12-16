@@ -29,4 +29,12 @@ contract FundraiserFactory {
     _fundraisers.push(fundraiser);
     emit FundraiserCreated(fundraiser, fundraiser.owner());
   }
+
+  function fundraisers(uint256 limit, uint256 offset)
+    public
+    view
+    returns(Fundraiser[] memory collection)
+  {
+    return collection;
+  }
 }
