@@ -143,4 +143,34 @@ contract("FundraiserFactory: fundraisers", (accounts) => {
       assert.ok(await name === "Beneficiary 7", `${name} did not include the offset`);
     });
   });
+
+  describe("boundary conditions", async () => {
+    let factory;
+    beforeEach(async () => {
+      factory = await createFundrasierFactory(10, accounts);
+    });
+
+    it("raises out of bounds error", async () =>{
+      try{
+        await factory.fundraisers(1,11);
+        assert.fail("error was not raised");
+      }catch(err){
+        const expected = "offset out of bounds";
+        assert.ok(err.message.includes(expected), `${err.message}`)
+      }
+    });
+
+    it("adjust return size to prevent out of bounds error", async () =>{
+      try{
+        const fundraisers = await factory.fundraisers(10,5);
+        assert.equal(
+          fundraisers.length,
+          5,
+          "collection adjusted"
+        );
+      }catch(err){
+        assert.fail("limit and offset exceeded bounds");
+      }
+    });
+  });
 });
