@@ -48,6 +48,15 @@ class App extends Component {
     this.setState({ greeting: response });
   };
 
+  handleGreetingChange = (e) => {
+    this.setState({greeting: e.target.value});
+  };
+
+  formSubmitHandle = async() => {
+    const {accounts, contract, greeting } = this.state;
+    const updateGreeting = await contract.methods.setGreeting(greeting).send({ from: accounts[0] });
+  };
+
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
@@ -56,6 +65,14 @@ class App extends Component {
       <div className="App">
         <h1>Greeter</h1>
         {this.state.greeting}
+
+        <form>
+          <label>
+            New Greeting
+            <input type="text" value={this.state.greeting} onChange={this.handleGreetingChange}></input>
+          </label>
+        </form>
+        <button onClick={this.formSubmitHandle}>Submit</button>
       </div>
     );
   }
