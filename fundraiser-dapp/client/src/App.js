@@ -16,9 +16,15 @@ import Typography from '@material-ui/core/Typography';
 
 import "./App.css";
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  }
+}));
+
 const App = () => {
   const [state, setState] = useState({web3: null, accounts: null, contract: null});
-
+  const classes = useStyles();
   useEffect(() => {
     const init = async() => {
       try {
@@ -49,12 +55,6 @@ const App = () => {
     }
     init();
   }, []);
-
-  const useStyles = makeStyles({
-    root: {
-      flexGrow: 1,
-    },
-  });
 
   const runExample = async () => {
     const { accounts, contract } = this.state;
