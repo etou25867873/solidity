@@ -26,3 +26,10 @@
   text-decoration: none;
   margin-right: 15px;
 }
+
+.nav-link:hover,
+.nav-link:active,
+.nav-link:visited {
+  color: black;
+  text-decoration: none;
+}
