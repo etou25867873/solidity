@@ -56,15 +56,18 @@ const NewFundraiser = () => {
   }, []);
 
   const handleSubmit = async () => {
-    await contract.methods.createFundraiser(
-      name,
-      url,
-      imageURL,
-      description,
-      beneficiary
-    ).send({ from: accounts[0] })
-
-    alert('Successfully created fundraiser')
+    if (contract) {
+      await contract.methods.createFundraiser(
+        name,
+        url,
+        imageURL,
+        description,
+        beneficiary
+      ).send({ from: accounts[0] })
+      alert('Successfully created fundraiser')
+    } else {
+      alert('contract not load')
+    }
   }
 
   return (
