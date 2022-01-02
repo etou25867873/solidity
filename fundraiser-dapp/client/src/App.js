@@ -65,10 +65,10 @@ const App = () => {
       <div>
         <AppBar position="static" color="default" style={{ margin: 0 }}>
           <Toolbar>
-          <Typography variant="h6" color="inherit">
-            <Link className="nav-link" to="/">Home</Link>
-          </Typography>
-          <Link className="nav-link" to="/new">New</Link>
+            <Typography variant="h6" color="inherit">
+              <Link className="nav-link" to="/">Home</Link>
+            </Typography>
+            <Link className="nav-link" to="/new">New</Link>
           </Toolbar>
         </AppBar>
         <Routes>

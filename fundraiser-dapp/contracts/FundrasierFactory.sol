@@ -13,7 +13,7 @@ contract FundraiserFactory {
     return _fundraisers.length;
   }
 
-  function createFundrasier(
+  function createFundraiser(
     string memory name,
     string memory url,
     string memory imageURL,
