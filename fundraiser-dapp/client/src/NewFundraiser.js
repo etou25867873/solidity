@@ -4,6 +4,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import getWeb3 from "./getWeb3";
 import FundraiserFactoryContract from "./contracts/FundraiserFactory.json";
+import detectEthereumProvider from '@metamask/detect-provider';
+import Web3 from 'web3';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -33,7 +35,8 @@ const NewFundraiser = () => {
   useEffect(() => {
     const init = async() => {
       try {
-        const web3 = await getWeb3();
+        const provider = await detectEthereumProvider();
+        const web3 = new Web3(provider);
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = FundraiserFactoryContract.networks[networkId];
         const accounts = await web3.eth.getAccounts();
@@ -42,9 +45,10 @@ const NewFundraiser = () => {
           deployedNetwork && deployedNetwork.address,
         );
 
-        setContract(instance)
-        setAccounts(accounts)
-
+        setContract(instance);
+        setAccounts(accounts);
+        console.log(instance);
+        console.log(accounts);
       } catch(error) {
         alert(
           `Failed to load web3, accounts, or contract. Check console for details.`,
