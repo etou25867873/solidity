@@ -33,12 +33,70 @@ const FundraiserCard = (props) => {
   const [ imageURL, setImageURL ] = useState(null)
   const [ url, setURL ] = useState(null)
   const [ donationAmount, setDonationAmount] = useState(null)
+  const { fundraiser } = props
+  const classes = useStyles();
 
   useEffect(() => {
-  }, []);
+    if (fundraiser) {
+      init(fundraiser)
+    }
+  }, [fundraiser]);
+
+  const init = async (fundraiser) => {
+    try {
+      const fund = fundraiser
+      const provider = await detectEthereumProvider();
+      const web3 = new Web3(provider);
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = FundraiserContract.networks[networkId];
+      const accounts = await web3.eth.getAccounts();
+      const instance = new web3.eth.Contract(
+        FundraiserContract.abi,
+        fund
+      );
+      setContract(instance)
+      setAccounts(accounts)
+
+      const name = await instance.methods.name().call()
+      const description = await instance.methods.description().call()
+      const totalDonations = await instance.methods.totalDonations().call()
+      const imageURL = await instance.methods.imageURL().call()
+      const url = await instance.methods.url().call()
+
+      setFundname(name)
+      setDescription(description)
+      setImageURL(imageURL)
+      setTotalDonations(totalDonations)
+      setURL(url)
+    }
+    catch(error) {
+      alert(
+        `Failed to load web3, accounts, or contract. Check console for details.`,
+      );
+      console.error(error);
+    }
+  }
 
   return (
     <div className="fundraiser-card-container">
+      <Card className={classes.card}>
+        <CardActionArea>
+          <CardMedia
+            className={classes.media}
+            image={imageURL}
+            title="Fundraiser Image"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {fundName}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              <p>{description}</p>
+              <p>Total Donations: ${totalDonations}</p>
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
     </div>
   )
 }

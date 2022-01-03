@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import FundraiserFactoryContract from "./contracts/FundraiserFactory.json";
 import detectEthereumProvider from '@metamask/detect-provider';
-import Web3 from 'web3'
+import Web3 from 'web3';
+import FundraiserCard from './FundraiserCard';
 
 
 const Home = () => {
@@ -39,11 +40,21 @@ const Home = () => {
     }
   }
 
+  const displayFundraisers = () => {
+    return funds.map((fundraiser) => {
+      return (
+        <FundraiserCard
+          fundraiser={fundraiser}
+        />
+      )
+    })
+  }
+
   return (
-    <div>
-      <h2>Home</h2>
+    <div className="main-container">
+      {displayFundraisers()}
     </div>
-  );
+  )
 }
 
 export default Home;
