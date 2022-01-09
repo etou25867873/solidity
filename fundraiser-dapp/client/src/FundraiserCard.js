@@ -19,6 +19,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
+import { Link } from "react-router-dom";
 
 import FundraiserContract from "./contracts/Fundraiser.json";
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -71,6 +72,8 @@ const FundraiserCard = (props) => {
   const [ donationAmount, setDonationAmount] = useState(null)
   const [ open, setOpen] = React.useState(false)
   const [ exchangeRate, setExchangeRate ] = useState(null)
+  const [ userDonations, setUserDonations ] = useState(null)
+
   const ethAmount = (donationAmount / exchangeRate || 0).toFixed(4)
 
   const { fundraiser } = props
@@ -112,8 +115,11 @@ const FundraiserCard = (props) => {
       setFundname(name)
       setDescription(description)
       setImageURL(imageURL)
-      setTotalDonations(dollarDonationAmount)
+      setTotalDonations(dollarDonationAmount.toFixed(2))
       setURL(url)
+
+      const userDonations = await instance.methods.myDonations().call({from: accounts[0]})
+      setUserDonations(userDonations);
     }
     catch(error) {
       alert(
@@ -143,6 +149,35 @@ const FundraiserCard = (props) => {
     setOpen(false);
   };
 
+  const renderDonationsList = () => {
+    var donations = userDonations
+    if (donations === null) {return null}
+
+    const totalDonations = donations.values.length
+    let donationList = []
+    var i
+    for (i = 0; i < totalDonations; i++) {
+      const ethAmount = web3.utils.fromWei(donations.values[i])
+      const userDonation = exchangeRate * ethAmount
+      const donationDate = donations.dates[i]
+      donationList.push({ donationAmount: userDonation.toFixed(2), date: donationDate})
+    }
+
+    return donationList.map((donation) => {
+      return (
+        <div className="donation-list">
+          <p>${donation.donationAmount}</p>
+
+          <Button variant="contained" color="primary">
+            <Link className="donation-receipt-link" to="/receipts" state={{ fundName: fundName, donation: donation.donationAmount, date: donation.date}}>
+              Request Receipt
+            </Link>
+          </Button>
+        </div>
+      )
+    })
+  }
+
   return (
     <div className="fundraiser-card-container">
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -170,6 +205,12 @@ const FundraiserCard = (props) => {
             <Button onClick={submitFunds} variant="contained" color="primary">
               Donate
             </Button>
+
+            <div>
+              <h3>My donations</h3>
+              {renderDonationsList()}
+            </div>
+
           </DialogContentText>
         </DialogContent>
         <DialogActions>

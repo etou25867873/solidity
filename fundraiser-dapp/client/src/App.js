@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import NewFundraiser from './NewFundraiser';
 import Home from './Home';
+import Receipts from './Receipts';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -75,6 +76,8 @@ const App = () => {
           <Route path="/new" element={<NewFundraiser/>}>
           </Route>
           <Route path="/" element={<Home/>}>
+          </Route>
+          <Route path="/receipts" element={<Receipts/>}>
           </Route>
         </Routes>
       </div>
