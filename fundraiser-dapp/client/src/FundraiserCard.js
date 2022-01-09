@@ -7,6 +7,12 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 import FundraiserContract from "./contracts/Fundraiser.json";
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -21,6 +27,12 @@ const useStyles = makeStyles(theme => ({
   media: {
     height: 140,
   },
+  button: {
+    margin: theme.spacing(1),
+  },
+  input: {
+    display: 'none',
+  }
 }));
 
 const FundraiserCard = (props) => {
@@ -33,6 +45,8 @@ const FundraiserCard = (props) => {
   const [ imageURL, setImageURL ] = useState(null)
   const [ url, setURL ] = useState(null)
   const [ donationAmount, setDonationAmount] = useState(null)
+  const [ open, setOpen] = React.useState(false);
+
   const { fundraiser } = props
   const classes = useStyles();
 
@@ -77,9 +91,33 @@ const FundraiserCard = (props) => {
     }
   }
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div className="fundraiser-card-container">
-      <Card className={classes.card}>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">
+          Donate to {fundName}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <img src={imageURL} width='200px' height='200px' />
+            <p>{description}</p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Card className={classes.card} onClick={handleOpen}>
         <CardActionArea>
           <CardMedia
             className={classes.media}
@@ -96,6 +134,14 @@ const FundraiserCard = (props) => {
             </Typography>
           </CardContent>
         </CardActionArea>
+        <CardActions>
+          <Button
+            onClick={handleOpen}
+            variant="contained"
+            className={classes.button}>
+            View More
+          </Button>
+        </CardActions>
       </Card>
     </div>
   )
