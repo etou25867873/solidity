@@ -170,6 +170,15 @@ const FundraiserCard = (props) => {
     setOpen(false);
   }
 
+  const setBeneficiary = async () => {
+    await contract.methods.setBeneficiary(beneficiary).send({
+      from: accounts[0],
+    })
+
+    alert(`Fundraiser Beneficiary Changed`)
+    setOpen(false);
+  }
+
   const renderDonationsList = () => {
     var donations = userDonations
     if (donations === null) {return null}
@@ -232,6 +241,22 @@ const FundraiserCard = (props) => {
               {renderDonationsList()}
             </div>
 
+            {isOwner &&
+              <div>
+                <FormControl className={classes.formControl}>
+                  Beneficiary:
+                  <Input
+                    value={beneficiary}
+                    onChange={(e) => setNewBeneficiary(e.target.value)}
+                    placeholder="Set Beneficiary"
+                   />
+                </FormControl>
+
+                <Button variant="contained" style={{ marginTop: 20 }} color="primary" onClick={setBeneficiary}>
+                  Set Beneficiary
+                </Button>
+              </div>
+            }
           </DialogContentText>
         </DialogContent>
         <DialogActions>
