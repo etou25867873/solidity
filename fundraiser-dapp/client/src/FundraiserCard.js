@@ -73,6 +73,8 @@ const FundraiserCard = (props) => {
   const [ open, setOpen] = React.useState(false)
   const [ exchangeRate, setExchangeRate ] = useState(null)
   const [ userDonations, setUserDonations ] = useState(null)
+  const [ isOwner, setIsOwner ] = useState(false)
+  const [ beneficiary, setNewBeneficiary ] = useState('')
 
   const ethAmount = (donationAmount / exchangeRate || 0).toFixed(4)
 
@@ -120,6 +122,13 @@ const FundraiserCard = (props) => {
 
       const userDonations = await instance.methods.myDonations().call({from: accounts[0]})
       setUserDonations(userDonations);
+
+      const isUser = accounts[0]
+      const isOwner = await instance.methods.owner().call()
+
+      if (isOwner === accounts[0]) {
+        setIsOwner(true)
+      }
     }
     catch(error) {
       alert(
@@ -128,6 +137,10 @@ const FundraiserCard = (props) => {
       console.error(error);
     }
   }
+
+  window.ethereum.on('accountsChanged', function (accounts) {
+    window.location.reload()
+  })
 
   const handleOpen = () => {
     setOpen(true);
@@ -148,6 +161,14 @@ const FundraiserCard = (props) => {
     })
     setOpen(false);
   };
+
+  const withdrawalFunds = async () => {
+    await contract.methods.withdraw().send({
+      from: accounts[0],
+    })
+    alert('Funds Withdrawn!')
+    setOpen(false);
+  }
 
   const renderDonationsList = () => {
     var donations = userDonations
@@ -217,6 +238,15 @@ const FundraiserCard = (props) => {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
+          {isOwner &&
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={withdrawalFunds}
+            >
+              Withdrawal
+            </Button>
+          }
         </DialogActions>
       </Dialog>
       <Card className={classes.card} onClick={handleOpen}>
