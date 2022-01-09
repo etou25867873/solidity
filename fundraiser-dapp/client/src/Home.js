@@ -9,6 +9,7 @@ const Home = () => {
   const [ contract, setContract] = useState(null)
   const [ accounts, setAccounts ] = useState(null)
   const [ funds, setFunds ] = useState([])
+  const [ web3, setWeb3] = useState(null)
 
   useEffect(() => {
     init()
@@ -27,6 +28,7 @@ const Home = () => {
       );
       setContract(instance)
       setAccounts(accounts)
+      setWeb3(web3)
 
       const funds = await instance.methods.fundraisers(10, 0).call()
 

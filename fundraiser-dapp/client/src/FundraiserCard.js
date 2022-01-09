@@ -13,11 +13,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import FilledInput from '@material-ui/core/FilledInput';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 
 import FundraiserContract from "./contracts/Fundraiser.json";
 import detectEthereumProvider from '@metamask/detect-provider';
 import Web3 from 'web3'
 
+const cc = require('cryptocompare')
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -32,7 +39,23 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none',
-  }
+  },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    display: 'table-cell'
+  },
+  paper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: 'none',
+    boxShadow: 'none',
+    padding: 4,
+  },
 }));
 
 const FundraiserCard = (props) => {
@@ -44,8 +67,11 @@ const FundraiserCard = (props) => {
   const [ totalDonations, setTotalDonations ] = useState(null)
   const [ imageURL, setImageURL ] = useState(null)
   const [ url, setURL ] = useState(null)
+  const [ donationCount, setDonationCount] = useState(null)
   const [ donationAmount, setDonationAmount] = useState(null)
-  const [ open, setOpen] = React.useState(false);
+  const [ open, setOpen] = React.useState(false)
+  const [ exchangeRate, setExchangeRate ] = useState(null)
+  const ethAmount = (donationAmount / exchangeRate || 0).toFixed(4)
 
   const { fundraiser } = props
   const classes = useStyles();
@@ -70,6 +96,7 @@ const FundraiserCard = (props) => {
       );
       setContract(instance)
       setAccounts(accounts)
+      setWeb3(web3)
 
       const name = await instance.methods.name().call()
       const description = await instance.methods.description().call()
@@ -77,10 +104,15 @@ const FundraiserCard = (props) => {
       const imageURL = await instance.methods.imageURL().call()
       const url = await instance.methods.url().call()
 
+      const exchangeRate = await cc.price('ETH', ['USD'])
+      setExchangeRate(exchangeRate.USD)
+      const eth = web3.utils.fromWei(totalDonations, 'ether')
+      const dollarDonationAmount = exchangeRate.USD * eth
+
       setFundname(name)
       setDescription(description)
       setImageURL(imageURL)
-      setTotalDonations(totalDonations)
+      setTotalDonations(dollarDonationAmount)
       setURL(url)
     }
     catch(error) {
@@ -99,6 +131,18 @@ const FundraiserCard = (props) => {
     setOpen(false);
   };
 
+  const submitFunds = async () => {
+    const ethTotal = donationAmount / exchangeRate
+    const donation = web3.utils.toWei(ethTotal.toString())
+
+    await contract.methods.donate().send({
+      from: accounts[0],
+      value: donation,
+      gas: 650000
+    })
+    setOpen(false);
+  };
+
   return (
     <div className="fundraiser-card-container">
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -109,6 +153,23 @@ const FundraiserCard = (props) => {
           <DialogContentText>
             <img src={imageURL} width='200px' height='200px' />
             <p>{description}</p>
+
+            <div className="donation-input-container">
+              <FormControl className={classes.formControl}>
+                $
+                <Input
+                  id="component-simple"
+                  value={donationAmount}
+                  onChange={(e) => setDonationAmount(e.target.value)}
+                  placeholder="0.00"
+                 />
+              </FormControl>
+              <p>Eth: {ethAmount}</p>
+            </div>
+
+            <Button onClick={submitFunds} variant="contained" color="primary">
+              Donate
+            </Button>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -47,8 +47,6 @@ const NewFundraiser = () => {
 
         setContract(instance);
         setAccounts(accounts);
-        console.log(instance);
-        console.log(accounts);
       } catch(error) {
         alert(
           `Failed to load web3, accounts, or contract. Check console for details.`,
